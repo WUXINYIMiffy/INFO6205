@@ -29,13 +29,19 @@ In all the types of array ordering, the count of compares only changes with the 
 - In the reverse ordered situation, the count of swaps is maximum.
 
 ###	Graphical representation:
-1. ordered:
+1. Ordered:![Ordered](Ordered.png)
 
 2. Reverse ordered:
 
+   ![reversedorder](reversedorder.png)
+
 3. Partial ordered:
 
+   ![Partialordered](Partialordered.png)
+
 4. Full random:
+
+   ![fullrandom](fullrandom.png)
 
 
 ###	Unit tests result: 
