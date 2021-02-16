@@ -14,9 +14,12 @@ class UF_HWQUPC(UF):
         :param n:                   n the number of sites
         :param path_compression:    whether to use path compression
         """
+
         self.count = n
+
         self.parent: List[int] = []
         self.height: List[int] = []
+
         for i in range(n):
             self.parent.append(i)
             self.height.append(1)
@@ -53,9 +56,16 @@ class UF_HWQUPC(UF):
         """
         self.validate(p)
         root = p
+        while root != self.parent[root]:
+            root = self.parent[root]
+        # if p == self.parent[p]:
+        #     return p
+        # else:
+        #     return self.find(self.parent[p])
+
         # TO BE IMPLEMENTED ...
-        
-        # ... END IMPLEMENTATION
+        if self.path_compression:
+            self.do_path_compression(p)
         return root
 
     def connected(self, p: int, q: int) -> bool:
@@ -120,16 +130,21 @@ class UF_HWQUPC(UF):
         return self.parent[i]
 
     def merge_components(self, i: int, j: int) -> None:
-        # TO BE IMPLEMENTED make shorter root point to taller one
-        
-        # ... END IMPLEMENTATION
+        ii, jj = (i, j) if self.height[i] < self.height[j] else (j, i)
+        self.parent[ii] = jj
+        self.update_height(jj, ii)
 
-    def do_path_compression(self, i) -> None:
+        # implement
+
+
+
+    def do_path_compression(self, p: int) -> None:
         """
         This implements the single-pass path-halving mechanism of path compression
 
-        :param i:                   the component
+        :param p:                   the component
         """
         # TO BE IMPLEMENTED update parent to value of grandparent
-        
+        self.parent[p] = self.parent[self.parent[p]]
+
         # ... END IMPLEMENTATION
