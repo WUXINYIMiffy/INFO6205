@@ -35,6 +35,7 @@ class UF_HWQUPC(UF):
         if not self.is_connected(p, q):
             self.union(p, q)
 
+
     def show(self) -> None:
         for i in range(len(self.parent)):
             print(f"{i}: {self.parent[i]}, {self.height[i]}")
@@ -66,7 +67,7 @@ class UF_HWQUPC(UF):
         # TO BE IMPLEMENTED ...
         if self.path_compression:
             self.do_path_compression(p)
-        print("find root",root)
+        # print("find root",root)
         return root
 
     def connected(self, p: int, q: int) -> bool:
@@ -157,3 +158,4 @@ class UF_HWQUPC(UF):
         self.parent[p] = self.parent[self.parent[p]]
 
         # ... END IMPLEMENTATION
+
