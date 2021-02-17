@@ -66,6 +66,7 @@ class UF_HWQUPC(UF):
         # TO BE IMPLEMENTED ...
         if self.path_compression:
             self.do_path_compression(p)
+        print("find root",root)
         return root
 
     def connected(self, p: int, q: int) -> bool:
@@ -77,6 +78,8 @@ class UF_HWQUPC(UF):
         :return:                    True if the two sites p and q are in the same component;
                                     False otherwise
         """
+        print("connected self.find(p)",self.find(p))
+        print("connected self.find(q)",self.find(q))
         return self.find(p) == self.find(q)
 
     def union(self, p: int, q: int) -> None:
@@ -88,8 +91,13 @@ class UF_HWQUPC(UF):
         :param q:                   the integer representing the other site
         """
         # CONSIDER can we avoid doing find again?
-        self.merge_components(self.find(p), self.find(q))
+        # self.merge_components(self.find(p), self.find(q))
         self.count -= 1
+        print("union self.find(p)",self.find(p))
+        print("union self.find(q)",self.find(q))
+        print("union self.count",self.count)
+        return self.merge_components(self.find(p), self.find(q))
+
 
     def size(self) -> int:
         return len(self.parent)
@@ -133,6 +141,7 @@ class UF_HWQUPC(UF):
         ii, jj = (i, j) if self.height[i] < self.height[j] else (j, i)
         self.parent[ii] = jj
         self.update_height(jj, ii)
+        return [ii,jj]
 
         # implement
 
