@@ -26,7 +26,7 @@ def try_connect(h: UF_HWQUPC, n: int) -> int:
 def main() -> None:
     # n = int(input("input:"))  # n determine the number of "sites"
     with open('stats.csv', 'w') as f:
-        for n in range(1, 1000000):
+        for n in range(1, 10000):
             m = 0
             for _ in range(50):
                 m += UF_Analysis.count(n)
