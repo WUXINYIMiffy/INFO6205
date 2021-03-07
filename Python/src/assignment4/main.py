@@ -8,6 +8,7 @@ class UF_Analysis:
         self.rank = [1] * (n + 1)
 
     def try_connect(self, pc: bool, n: int):
+        # t1 = 1
         t1 = random.randint(0, n)
         t2 = random.randint(0, n)
         self.union(t1, t2, pc)
