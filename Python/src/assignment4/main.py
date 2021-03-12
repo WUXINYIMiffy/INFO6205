@@ -8,19 +8,20 @@ class UF_Analysis:
         self.rank = [1] * (n + 1)
 
     def try_connect(self, pc: bool, n: int):
-        # t1 = 1
-        t1 = random.randint(0, n)
+        t1 = 1 
+        #t1 = random.randint(0, n)
         t2 = random.randint(0, n)
         self.union(t1, t2, pc)
         print(f't1: {t1} | t2: {t2}', sep=',')
         with open('aaa.csv', mode='a') as f:
             print(t1, t2, file=f, sep=',')
 
+#after pathcompression
     def pcfind(self, root):
         if self.parent[root] != self.parent[self.parent[root]]:
             self.parent[root] = self.pcfind(self.parent[root])
         return self.parent[root]
-
+#no pathcompression
     def find(self, root):
         while root != self.parent[root]:
             root = self.parent[root]
