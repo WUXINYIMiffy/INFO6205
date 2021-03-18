@@ -5,7 +5,7 @@ from union_find.uf import UF
 
 class UF_HWQUPC(UF):
 
-    def __init__(self, n: int, path_compression: bool = True):
+    def __init__(self, n: int, path_compression: bool = True, path_compression_all_to_root: bool = False):
         """
         Initializes an empty union–find data structure with n sites
         0 through n-1. Each site is initially in its own
@@ -24,6 +24,7 @@ class UF_HWQUPC(UF):
             self.parent.append(i)
             self.height.append(1)
         self.path_compression = path_compression
+        self.path_compression_all_to_root = path_compression_all_to_root
 
     def connect(self, p: int, q: int) -> None:
         """
@@ -34,7 +35,6 @@ class UF_HWQUPC(UF):
         """
         if not self.is_connected(p, q):
             self.union(p, q)
-
 
     def show(self) -> None:
         for i in range(len(self.parent)):
@@ -66,7 +66,10 @@ class UF_HWQUPC(UF):
 
         # TO BE IMPLEMENTED ...
         if self.path_compression:
-            self.do_path_compression(p)
+            if self.path_compression_all_to_root:
+                self.do_path_compression_all_to_root(p, root)
+            else:
+                self.do_path_compression(p)
         # print("find root",root)
         return root
 
@@ -159,3 +162,15 @@ class UF_HWQUPC(UF):
 
         # ... END IMPLEMENTATION
 
+    def do_path_compression_all_to_root(self, p: int, root: int) -> None:
+        """
+        This implements the path compression that folds all intermediate nodes to their root
+
+        :param p:                   the component
+        :param root:                the root
+        """
+        current = p
+        while current != self.parent[current]:
+            next_ = self.parent[current]
+            self.parent[current] = root
+            current = next_
