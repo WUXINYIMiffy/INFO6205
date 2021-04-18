@@ -35,20 +35,44 @@ def rhand_delete_node(node: BSTNode) -> None:
             node.lchild.parent = node.parent
         return
 
-    
 
 def lhand_delete_node(node: BSTNode) -> None:
+    pass
     '''
     Delete the given node in left-handed style
     '''
-    pass
+    # if node.lchild is None:
+    #     if node.parent is not None:
+    #         if node.parent.rchild == node:
+    #             node.parent.rchild = node.rchild
+    #         else:
+    #             node.parent.lchild = node.rchild
+    #     if node.rchild is not None:
+    #         node.rchild.parent = node.parent
+    #     return
+
 
 def find_min(node: BSTNode) -> BSTNode:
     '''
     return the node with minimal key in the subtree
     '''
+    if node.lchild is None:
+        return node
+
     raise NotImplementedError()
 
 
-
-
+def insert(self, node: BSTNode):
+    if self.node:
+        if node < self.node:
+            if self.left is None:
+                self.left = BSTNode(node)
+            else:
+                self.left.insert(node)
+        elif node > self.node:
+            if self.right is None:
+                self.right = BSTNode(node)
+            else:
+                self.right.insert(node)
+    else:
+        self.node =
