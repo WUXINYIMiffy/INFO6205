@@ -1,14 +1,8 @@
 from __future__ import annotations
 
 import typing as t
+from random import randint
 from dataclasses import dataclass
-
-@dataclass
-class EmptyNode:
-    '''
-    A class representing an empty BST node
-    '''
-    is_empty: bool = True
 
 
 @dataclass
@@ -21,71 +15,78 @@ class BSTNode:
     key: int
     value: int
     count: int = 1
-    lchild: BSTNode = EmptyNode()
-    rchild: BSTNode = EmptyNode()
-    is_empty: bool = False
+    lchild: BSTNode = None
+    rchild: BSTNode = None
 
-    def nullify(self) -> None:
-        self.lchild = EmptyNode
-        self.rchild = EmptyNode
-        self.is_empty = True
+    def equals(self, other_node: OptionalBSTNode) -> bool:
+        if self.key != other_node.key:
+            return False
+        if self.value != other_node.value:
+            return False
+        if self.count != other_node.count:
+            return False
+        if self.lchild is not None:
+            if not self.lchild.equals(other_node.lchild):
+                return False
+        elif other_node.lchild is not None:
+            return False
+        if self.rchild is not None:
+            if not self.rchild.equals(other_node.rchild):
+                return False
+        elif other_node.rchild is not None:
+            return False
 
-def search_key(root: BSTNode, key: int) -> BSTNode:
+        return True
+
+
+OptionalBSTNode = t.Optional[BSTNode]
+
+
+def search_key(root: OptionalBSTNode, key: int) -> OptionalBSTNode:
     '''
     search the BST with given key
     return the found node
     '''
-    return _search_key_with_parent(root, key, EMPTY_NODE)[0]
-
-
-def _search_key_with_parent(root: BSTNode, key: int, parent: BSTNode) -> t.Tuple[
-    BSTNode, BSTNode]:
-    '''
-    search the BST with given key
-    return the found node, and its parent node
-    '''
-    if root.is_empty:
-        return root, parent
+    if root is None:
+        return None
 
     if key == root.key:
-        return root, parent
+        return root
     elif key < root.key:
-        return _search_key_with_parent(root.lchild, key, root)
+        return search_key(root.lchild, key)
     else:
-        return _search_key_with_parent(root.rchild, key, root)
+        return search_key(root.rchild, key)
 
 
-def insert_node(node: BSTNode, root: t.BSTNode) -> BSTNode:
+def insert_node(node: BSTNode, root: OptionalBSTNode) -> BSTNode:
     '''
     insert a node to a BSTNode root
     '''
-    maybe_found_node, found_node_parent = _search_key_with_parent(root=root, key=node.key, parent=EMPTY_NODE)
-    if not maybe_found_node.is_empty:
-        # reset value
-        maybe_found_node.value = node.value
-        return root
-
-    if found_node_parent.is_empty:
+    if root is None:
         return node
 
-    if node.key < found_node_parent.key:
-        found_node_parent.lchild = node
-    elif node.key > found_node_parent.key:
-        found_node_parent.rchild = node
+    if node.key == root.key:
+        root.value = node.value
+    elif node.key < root.key:
+        root.lchild = insert_node(node, root.lchild)
     else:
-        raise Exception('cannot happen')
+        root.rchild = insert_node(node, root.rchild)
     return root
 
 
-def make_bst(keys: t.List[int], values: t.List[int]) -> t.Optional[BSTNode]:
+def make_simple_bst(keys: t.List[int]) -> OptionalBSTNode:
+    return make_bst(keys=keys, values=keys)
+
+
+def make_bst(keys: t.List[int], values: t.List[int]) -> OptionalBSTNode:
     assert len(keys) == len(values)
-    root = EMPTY_NODE
+    root = None
     for k, v in zip(keys, values):
         root = insert_node(BSTNode(key=k, value=v), root)
     return root
 
 
-def delete_key(root: t.Optional[BSTNode], key: int) -> t.Optional[BSTNode]:
+def delete_key(root: OptionalBSTNode, key: int, algorithm: str) -> OptionalBSTNode:
     '''
     delete a node from the BST root
     returns the new root
@@ -93,35 +94,78 @@ def delete_key(root: t.Optional[BSTNode], key: int) -> t.Optional[BSTNode]:
     if root is None:
         return None
 
-    maybe_found_node, found_node_parent = _search_key_with_parent(root, key, None)
-    if maybe_found_node is None:
+    if key < root.key:
+        root.lchild = delete_key(root.lchild, key, algorithm)
+        return root
+    if key > root.key:
+        root.rchild = delete_key(root.rchild, key, algorithm)
         return root
 
-    if maybe_found_node.rchild is None:
-        if found_node_parent is None:
-            return maybe_found_node.lchild
-
-        if found_node_parent.lchild == maybe_found_node:
-            found_node_parent.lchild = maybe_found_node.lchild
+    if algorithm.lower() == 'hibbard':
+        if root.rchild is None:
+            return root.lchild
+        min_node = find_min(root.rchild)
+        root.key = min_node.key
+        root.value = min_node.value
+        root.rchild = delete_min(root.rchild)
+    elif algorithm.lower() == 'arbitrary-principle':
+        # 0: left hand style; 1: right hand style
+        if randint(0, 1) == 0:
+            if root.lchild is None:
+                return root.rchild
+            max_node = find_max(root.lchild)
+            root.key = max_node.key
+            root.value = max_node.value
+            root.lchild = delete_max(root.lchild)
         else:
-            found_node_parent.rchild = maybe_found_node.lchild
-        return root
-
-    _, min_rnode = delete_min(maybe_found_node.rchild)
-    maybe_found_node.value = min_rnode.value
+            if root.rchild is None:
+                return root.lchild
+            min_node = find_min(root.rchild)
+            root.key = min_node.key
+            root.value = min_node.value
+            root.rchild = delete_min(root.rchild)
+    else:
+        raise NotImplementedError('unsupported algorithm')
+    return root
 
 
 def find_min(root: BSTNode) -> BSTNode:
+    '''
+    return the node with the minimum key
+    '''
     if root.lchild is None:
         return root
     return find_min(root.lchild)
 
 
-def delete_min(root: BSTNode, parent: t.Optional[BSTNode]) -> t.Tuple[BSTNode, BSTNode]:
+def find_max(root: BSTNode) -> BSTNode:
+    '''
+    return the node with the maximum key
+    '''
+    if root.rchild is None:
+        return root
+    return find_max(root.rchild)
+
+
+def delete_min(root: BSTNode) -> OptionalBSTNode:
     '''
     delete the node with minimum key in BST root
-    return the new root, and the node with minimum key
+    return the new root
     '''
-    min_node = find_min(root)
-    _, min_node_parent = _search_key_with_parent(root, min_node.key, None)
+    if root.lchild is None:
+        return root.rchild
 
+    root.lchild = delete_min(root.lchild)
+    return root
+
+
+def delete_max(root: BSTNode) -> OptionalBSTNode:
+    '''
+    delete the node with maximum key in BST root
+    return the new root
+    '''
+    if root.rchild is None:
+        return root.lchild
+
+    root.rchild = delete_max(root.rchild)
+    return root
