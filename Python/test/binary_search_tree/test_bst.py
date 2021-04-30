@@ -53,7 +53,7 @@ class TestBST(unittest.TestCase):
         self.assertTrue(average_depth(root_2) <= average_depth(root_1))
 
     def test_visualizer(self) -> None:
-        instructions = make_random_bst_instructions(30, 10)
+        instructions = make_random_bst_instructions(1024, 512)
         root = execute_instructions(instructions, 'hibbard')
         visualize_bt(root, converter)
 
